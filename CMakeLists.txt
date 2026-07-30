@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON) # damit C++26 erzwungen wird
 set(SOURCES # SOURCES ist Name der neuen Variablen
     src/cpu.cpp
     src/memory.cpp
+    src/emulator.cpp
 )
 
 # main ist Name des targets. Könnte auch irgendwie anderst benannt werden
@@ -17,7 +18,7 @@ add_executable(main src/main.cpp ${SOURCES}) # ${SOURCES} fügt wird durch seine
 
 # Ohne das müsste man überall #include "../include/emulator/cpu.hpp" schreiben. 
 # Das Standard-Verzeichnis bei #include wird zu /include (wo alle hpps sind) geändert.
-target_include_directories(main PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(main PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/emulator)
 
 # von hand builden:
 # cmake -B build 

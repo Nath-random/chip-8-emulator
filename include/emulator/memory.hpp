@@ -1,12 +1,13 @@
 #ifndef MEMORY_HPP_
 #define MEMORY_HPP_
 
+#include <cstdint>
 #include <array>
 
 struct Memory {
 
 // private:
-    std::array<std::byte, 4000> ram;
+    std::array<uint8_t, 4096> ram;
 
 };
 

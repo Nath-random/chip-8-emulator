@@ -1,18 +1,8 @@
-#include <iostream>
-
-#include "emulator/cpu.hpp"
-#include <iostream>
-
-auto run(CPU &cpu) -> void {
-    cpu.r1 = std::byte{5};
-    
-    std::cout << std::to_integer<int>(cpu.r1) << "\n";
-}
+#include "emulator.hpp"
 
 auto main() -> int {
-    CPU cpu;
-    run(cpu);
+    Emulator emulator{"/home/nath/Documents/workarea/chip-8-emulator/roms/input.ch8"};
+    emulator.start();
 
     return 0;
 }
-
