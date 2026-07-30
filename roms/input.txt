@@ -1,0 +1,5 @@
+add r1, 8
+set r2, 5
+addr r2, r1
+out r2
+#expected output 13
