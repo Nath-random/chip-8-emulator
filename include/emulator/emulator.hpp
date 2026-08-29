@@ -18,6 +18,7 @@ struct Emulator {
 
     auto opJumpAddr() -> void;
     auto opSet() -> void;
+    auto opAdd() -> void;
     auto opNop() -> void;
 
 private:

@@ -1,3 +1,4 @@
+#include <SDL.h>
 #include "emulator.hpp"
 
 auto main() -> int {

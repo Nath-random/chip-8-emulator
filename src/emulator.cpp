@@ -23,7 +23,6 @@ auto Emulator::loadROM() -> void {
 }
 
 auto Emulator::start() -> void {
-
     while (true) {
         std::cout << +cpu.pc;
         fetch();
@@ -52,13 +51,13 @@ auto Emulator::decode() -> void {
 
     if (firstNibble == 0x1) {
         currentOperation = &Emulator::opJumpAddr;
-        return;
     } else if (firstNibble == 0x6) {
         currentOperation = &Emulator::opSet;
-        return;
+    } else if (firstNibble == 0x7) {
+        currentOperation = &Emulator::opAdd;
+    } else {
+        currentOperation = &Emulator::opNop;
     }
-    
-    currentOperation = &Emulator::opNop;
 }
 
 auto Emulator::execute() -> void {
@@ -70,11 +69,12 @@ auto Emulator::execute() -> void {
 auto Emulator::opJumpAddr() -> void { // Jump to Address
     cpu.pc = lastTwelveBits;
 }
-
 auto Emulator::opSet() -> void {
     cpu.vRegisters.at(secondNibble) = secondByte;
 }
-
+auto Emulator::opAdd() -> void {
+    cpu.vRegisters.at(secondNibble) += secondByte;
+}
 auto Emulator::opNop() -> void { // no operation
     return;
 }
