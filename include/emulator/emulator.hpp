@@ -19,6 +19,8 @@ struct Emulator {
     auto decode() -> void;
     auto execute() -> void;
 
+    auto updateTimers() -> void;
+
     auto opClearScreen() -> void; // 00E0
     auto opReturnSubroutine() -> void; // 00EE
     auto opJumpAddr() -> void; // 1NNN
@@ -62,6 +64,9 @@ private:
     CPU cpu{};
     Screen screen{};
     Keyboard keyboard{};
+    uint8_t delayTimer{};
+    uint8_t soundTimer{};
+
     std::string diskPath;
 
     uint32_t frameCount = 0;

@@ -37,6 +37,8 @@ auto Emulator::start() -> void {
             cycleCount++;
         }
 
+        updateTimers();
+
         screen.renderFrame();
         frameCount++;
 
@@ -50,6 +52,15 @@ auto Emulator::start() -> void {
             std::chrono::nanoseconds remainingTime = std::chrono::nanoseconds(1000000000 / fps) - timeSinceLastFrame;
             std::this_thread::sleep_for(remainingTime);
         }
+    }
+}
+
+auto Emulator::updateTimers() -> void {
+    if (delayTimer) {
+        --delayTimer;
+    }
+    if (soundTimer) {
+        --soundTimer;
     }
 }
 
@@ -224,6 +235,7 @@ auto Emulator::opJumpOffset() -> void {
     cpu.pc = lastTwelveBits + cpu.vRegisters.at(0);
 }
 auto Emulator::opRandom() -> void {
+    cpu.vRegisters.at(0) = 0;
     std::cout << "not implemented: " << opCode << "\n";
 }
 auto Emulator::opDraw() -> void {
@@ -250,13 +262,13 @@ auto Emulator::opSkipNoKey() -> void {
     }
 }
 auto Emulator::opGetDelayTimer() -> void {
-    std::cout << "not implemented: " << opCode << "\n";
+    cpu.vRegisters.at(secondNibble) = delayTimer;
 }
 auto Emulator::opSetDelayTimer() -> void {
-    std::cout << "not implemented: " << opCode << "\n";
+    delayTimer = cpu.vRegisters.at(secondNibble);
 }
 auto Emulator::opSetSoundTimer() -> void {
-    std::cout << "not implemented: " << opCode << "\n";
+    soundTimer = cpu.vRegisters.at(secondNibble);
 }
 auto Emulator::opAddIndex() -> void {
     cpu.i += cpu.vRegisters.at(secondNibble);
