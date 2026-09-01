@@ -12,6 +12,7 @@ set(SOURCES # SOURCES ist Name der neuen Variablen
     src/cpu.cpp
     src/memory.cpp
     src/emulator.cpp
+    src/screen.cpp
 )
 
 find_package(PkgConfig REQUIRED)

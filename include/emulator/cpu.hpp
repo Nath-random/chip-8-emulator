@@ -15,7 +15,7 @@ struct CPU {
     std::array<uint8_t, 16> vRegisters; 
 
     // program counter
-    uint16_t pc;
+    uint16_t pc = 0x200;
 
     // index register
     uint16_t i;

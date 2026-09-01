@@ -1,8 +1,10 @@
 #ifndef EMULATOR_HPP_
 #define EMULATOR_HPP_
 
-#include "cpu.hpp"
 #include <string>
+
+#include "cpu.hpp"
+#include "screen.hpp"
 
 struct Emulator {
     using Operation = void (Emulator::*)();
@@ -16,14 +18,18 @@ struct Emulator {
     auto decode() -> void;
     auto execute() -> void;
 
+    auto opClearScreen() -> void;
     auto opJumpAddr() -> void;
     auto opSet() -> void;
     auto opAdd() -> void;
+    auto opSetIndex() -> void;
+    auto opDraw() -> void;
     auto opNop() -> void;
 
 private:
-    std::string path;
     CPU cpu{};
+    Screen screen{};
+    std::string diskPath;
 
     //values of current instruction
     uint16_t opCode{0};
