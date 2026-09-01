@@ -4,12 +4,14 @@
 
 #include <array>
 #include <cstdint>
+#include <stack>
 
 struct CPU {
 
     CPU();
 
     std::array<uint8_t, 4096> ram{};
+    std::stack<uint16_t> stack{};
 
     // registers v0 to vF, vF is used as flag register. v stands for variable
     std::array<uint8_t, 16> vRegisters; 
