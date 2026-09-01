@@ -6,8 +6,3 @@ SDL2: Weil ich nixos benutze kann ich sdl2 nicht einfach so installieren. Darum 
 
 Notes:
 Todo:
-bei allen arithmetischen operationen flags anpassen
-make left/right-shift setting
-make setting for BNNN jump with offset
-make FX1E flag
-bei GetKey auf positiveFlanke warten

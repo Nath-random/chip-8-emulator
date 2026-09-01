@@ -60,6 +60,13 @@ struct Emulator {
     static constexpr uint fps = 60; // frames per second
     static constexpr uint cpf = 10; // cycles per frame
 
+    // settings
+    static constexpr bool shiftChangesFlag = true;
+    static constexpr bool addToIndexChangesFlag = true;
+    static constexpr bool spritesWrapAroundX = true;
+    static constexpr bool spritesWrapAroundY = true;
+    static constexpr bool specialJumpWithOffsetBehaviour = false;
+
 private:
     CPU cpu{};
     Screen screen{};

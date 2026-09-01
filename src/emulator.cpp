@@ -210,19 +210,35 @@ auto Emulator::opXor() -> void {
     cpu.vRegisters.at(secondNibble) = cpu.vRegisters.at(secondNibble) ^ cpu.vRegisters.at(thirdNibble);
 }
 auto Emulator::opRegisterAdd() -> void {
+    bool overflow = cpu.vRegisters.at(secondNibble) + cpu.vRegisters.at(thirdNibble) > 255;
     cpu.vRegisters.at(secondNibble) += cpu.vRegisters.at(thirdNibble);
+    cpu.vRegisters.at(0xF) = overflow; // do it after the add in case VX is F
 }
 auto Emulator::opSubtract() -> void {
+    bool underflow = cpu.vRegisters.at(secondNibble) < cpu.vRegisters.at(thirdNibble);
     cpu.vRegisters.at(secondNibble) -= cpu.vRegisters.at(thirdNibble);
+    cpu.vRegisters.at(0xF) = !underflow;
 }
 auto Emulator::opShiftRight() -> void {
+    bool shiftedOutBit = cpu.vRegisters.at(thirdNibble) % 2;
     cpu.vRegisters.at(secondNibble) = cpu.vRegisters.at(thirdNibble) >> 1;
+
+    if (shiftChangesFlag) {
+        cpu.vRegisters.at(0xF) = shiftedOutBit;
+    }
 }
 auto Emulator::opSubtractReverse() -> void {
+    bool underflow = cpu.vRegisters.at(thirdNibble) < cpu.vRegisters.at(secondNibble);
     cpu.vRegisters.at(secondNibble) = cpu.vRegisters.at(thirdNibble) - cpu.vRegisters.at(secondNibble);
+    cpu.vRegisters.at(0xF) = !underflow;
 }
 auto Emulator::opShiftLeft() -> void {
+    bool shiftedOutBit = cpu.vRegisters.at(thirdNibble) >> 7;
     cpu.vRegisters.at(secondNibble) = cpu.vRegisters.at(thirdNibble) << 1;
+
+    if (shiftChangesFlag) {
+        cpu.vRegisters.at(0xF) = shiftedOutBit;
+    }
 }
 auto Emulator::opSkipRegistersNotEqual() -> void {
     if (cpu.vRegisters.at(secondNibble) != cpu.vRegisters.at(thirdNibble)) {
@@ -232,7 +248,11 @@ auto Emulator::opSetIndex() -> void {
     cpu.i = lastTwelveBits;
 }
 auto Emulator::opJumpOffset() -> void {
-    cpu.pc = lastTwelveBits + cpu.vRegisters.at(0);
+    if (specialJumpWithOffsetBehaviour) {
+        cpu.pc = lastTwelveBits + cpu.vRegisters.at(secondNibble);
+    } else {
+        cpu.pc = lastTwelveBits + cpu.vRegisters.at(0);
+    }
 }
 auto Emulator::opRandom() -> void {
     cpu.vRegisters.at(0) = 0;
@@ -252,12 +272,12 @@ auto Emulator::opDraw() -> void {
     cpu.vRegisters.at(0xF) = pixelTurnedOff;
 }
 auto Emulator::opSkipKey() -> void {
-    if (keyboard.keys.at(secondNibble)) {
+    if (keyboard.keys.at(cpu.vRegisters.at(secondNibble))) {
         cpu.pc = (cpu.pc + 2) % 4096;
     }
 }
 auto Emulator::opSkipNoKey() -> void {
-    if (!keyboard.keys.at(secondNibble)) {
+    if (!keyboard.keys.at(cpu.vRegisters.at(secondNibble))) {
         cpu.pc = (cpu.pc + 2) % 4096;
     }
 }
@@ -271,7 +291,12 @@ auto Emulator::opSetSoundTimer() -> void {
     soundTimer = cpu.vRegisters.at(secondNibble);
 }
 auto Emulator::opAddIndex() -> void {
+    bool overflow = (cpu.i + cpu.vRegisters.at(secondNibble)) >= 4096;
     cpu.i += cpu.vRegisters.at(secondNibble);
+
+    if (addToIndexChangesFlag) {
+        cpu.vRegisters.at(0xF) = !overflow;
+    }
 }
 auto Emulator::opGetKey() -> void {
     for (size_t key = 0; key <= 0xF; ++key) {
@@ -291,25 +316,25 @@ auto Emulator::opDecimalConversion() -> void {
 
     uint8_t decimalDigit = binaryNumber % 10;
     cpu.ram.at(cpu.i + 2) = decimalDigit;
-    decimalDigit /= 10;
+    binaryNumber /= 10;
 
     decimalDigit = binaryNumber % 10;
     cpu.ram.at(cpu.i + 1) = decimalDigit;
-    decimalDigit /= 10;
+    binaryNumber /= 10;
 
     decimalDigit = binaryNumber;
     cpu.ram.at(cpu.i) = decimalDigit;
 }
 auto Emulator::opStoreRegisters() -> void {
     uint16_t address = cpu.i;
-    for (size_t n = 0; n <= 0xF; ++n) {
+    for (size_t n = 0; n <= secondNibble; ++n) {
         cpu.ram.at(address) = cpu.vRegisters.at(n);
         address = (address + 1) % 4096;
     }
 }
 auto Emulator::opLoadRegisters() -> void {
     uint16_t address = cpu.i;
-    for (size_t n = 0; n <= 0xF; ++n) {
+    for (size_t n = 0; n <= secondNibble; ++n) {
         cpu.vRegisters.at(n) = cpu.ram.at(address);
         address = (address + 1) % 4096;
     }
