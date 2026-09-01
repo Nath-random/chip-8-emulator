@@ -1,6 +1,9 @@
+#include <chrono>
+#include <exception>
 #include <fstream>
 #include <iostream>
-#include <exception>
+#include <thread>
+
 #include "emulator.hpp"
 
 Emulator::Emulator(std::string diskPath) : diskPath{diskPath} {
@@ -25,9 +28,21 @@ auto Emulator::loadROM() -> void {
 auto Emulator::start() -> void {
     while (true) {
         // std::cout << +cpu.pc;
-        fetch();
-        decode();
-        execute();
+        std::chrono::time_point frameStart = std::chrono::steady_clock::now();
+
+        for (size_t i = 0; i < cpf; ++i) { // default: 10 CPU Cycles per frame
+            fetch();
+            decode();
+            execute();
+        }
+
+        screen.renderFrame();
+
+        std::chrono::nanoseconds timeSinceLastFrame = std::chrono::steady_clock::now() - frameStart;
+        if (timeSinceLastFrame < std::chrono::milliseconds(1000 / fps)) {
+            std::chrono::nanoseconds remainingTime = std::chrono::nanoseconds(1000000000 / fps) - timeSinceLastFrame;
+            std::this_thread::sleep_for(remainingTime);
+        }
     }
 }
 

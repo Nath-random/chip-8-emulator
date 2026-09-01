@@ -26,10 +26,16 @@ struct Emulator {
     auto opDraw() -> void;
     auto opNop() -> void;
 
+    static constexpr uint fps = 60; // frames per second
+    static constexpr uint cpf = 10; // cycles per frame
+
 private:
     CPU cpu{};
     Screen screen{};
     std::string diskPath;
+
+    uint32_t frameCount = 0;
+    uint32_t cycleCount = 0;
 
     //values of current instruction
     uint16_t opCode{0};

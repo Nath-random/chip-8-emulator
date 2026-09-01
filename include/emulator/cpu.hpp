@@ -7,7 +7,6 @@
 
 struct CPU {
 
-
 // private:
     Memory memory;
 

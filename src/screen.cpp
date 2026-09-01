@@ -5,6 +5,7 @@ Screen::Screen() {
     SDL_Init(SDL_INIT_VIDEO);
     SDL_CreateWindowAndRenderer(WIDTH * SCALING_FACTOR, HEIGHT * SCALING_FACTOR, 0, &window, &renderer);
     SDL_RenderSetScale(renderer, SCALING_FACTOR, SCALING_FACTOR);
+    clearScreen();
 }
 
 Screen::~Screen() {
@@ -19,7 +20,6 @@ auto Screen::clearScreen() -> void {
             pixelState.at(y).at(x) = 0;
         }
     }
-    renderFrame();
 }
 
 auto Screen::drawSpriteLine(uint16_t xBegin, uint16_t y, uint8_t spriteLine) -> bool { // A line of a sprite is 8 bit wide
@@ -34,7 +34,6 @@ auto Screen::drawSpriteLine(uint16_t xBegin, uint16_t y, uint8_t spriteLine) -> 
             pixelState.at(y).at(x) = !pixelState.at(y).at(x); // toggle/XOR pixel
         }
     }
-    renderFrame();
     return pixelTurnedOff;
 }
 
