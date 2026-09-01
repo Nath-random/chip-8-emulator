@@ -4,6 +4,7 @@
 #include <string>
 
 #include "cpu.hpp"
+#include "keyboard.hpp"
 #include "screen.hpp"
 
 struct Emulator {
@@ -60,6 +61,7 @@ struct Emulator {
 private:
     CPU cpu{};
     Screen screen{};
+    Keyboard keyboard{};
     std::string diskPath;
 
     uint32_t frameCount = 0;

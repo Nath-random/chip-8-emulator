@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <chrono>
 #include <exception>
 #include <fstream>
@@ -27,7 +28,6 @@ auto Emulator::loadROM() -> void {
 
 auto Emulator::start() -> void {
     while (true) {
-        // std::cout << +cpu.pc;
         std::chrono::time_point frameStart = std::chrono::steady_clock::now();
 
         for (size_t i = 0; i < cpf; ++i) { // default: 10 CPU Cycles per frame
@@ -39,6 +39,11 @@ auto Emulator::start() -> void {
 
         screen.renderFrame();
         frameCount++;
+
+        if (screen.handleEvents(keyboard)) {
+            return;
+        }
+        
 
         std::chrono::nanoseconds timeSinceLastFrame = std::chrono::steady_clock::now() - frameStart;
         if (timeSinceLastFrame < std::chrono::milliseconds(1000 / fps)) {
@@ -235,10 +240,14 @@ auto Emulator::opDraw() -> void {
     cpu.vRegisters.at(0xF) = pixelTurnedOff;
 }
 auto Emulator::opSkipKey() -> void {
-    std::cout << "not implemented: " << opCode << "\n";
+    if (keyboard.keys.at(secondNibble)) {
+        cpu.pc = (cpu.pc + 2) % 4096;
+    }
 }
 auto Emulator::opSkipNoKey() -> void {
-    std::cout << "not implemented: " << opCode << "\n";
+    if (!keyboard.keys.at(secondNibble)) {
+        cpu.pc = (cpu.pc + 2) % 4096;
+    }
 }
 auto Emulator::opGetDelayTimer() -> void {
     std::cout << "not implemented: " << opCode << "\n";
@@ -253,7 +262,14 @@ auto Emulator::opAddIndex() -> void {
     cpu.i += cpu.vRegisters.at(secondNibble);
 }
 auto Emulator::opGetKey() -> void {
-    std::cout << "not implemented: " << opCode << "\n";
+    for (size_t key = 0; key <= 0xF; ++key) {
+        if (keyboard.keys.at(key)) {
+            cpu.vRegisters.at(secondNibble) = key;
+            return; 
+        }
+    }
+
+    cpu.pc = (cpu.pc + 4096 - 2) % 4096; // do this instruction until a button is pressed
 }
 auto Emulator::opFontCharacter() -> void {
     cpu.i = 0x50 + 5 * cpu.vRegisters.at(secondNibble); // a character is bytes long, font is stored at 0x50 - 0x9F

@@ -5,6 +5,8 @@
 
 #include <array>
 
+#include "keyboard.hpp"
+
 struct Screen {
     Screen();
     ~Screen();
@@ -15,6 +17,8 @@ struct Screen {
     auto clearScreen() -> void;
     auto drawSpriteLine(uint16_t xBegin, uint16_t y, uint8_t spriteLine) -> bool;
     auto renderFrame() -> void;
+
+    auto handleEvents(Keyboard &keyboard) -> bool;
 
     static constexpr u_int WIDTH = 64;
     static constexpr u_int HEIGHT = 32;
