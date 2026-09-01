@@ -21,7 +21,7 @@ auto Emulator::loadROM() -> void {
     char byte;
     while(byteCount < 4096 && romFile.get(byte)) {
         // std::cout << +byte << " ";
-        cpu.memory.ram.at(byteCount++) = byte;
+        cpu.ram.at(byteCount++) = byte;
     }
 }
 
@@ -47,8 +47,8 @@ auto Emulator::start() -> void {
 }
 
 auto Emulator::fetch() -> void {
-    opCode = cpu.memory.ram.at(cpu.pc) << 8;
-    opCode += cpu.memory.ram.at(cpu.pc + 1);
+    opCode = cpu.ram.at(cpu.pc) << 8;
+    opCode += cpu.ram.at(cpu.pc + 1);
 
     cpu.pc = (cpu.pc + 2) % 4096;
 }
@@ -69,9 +69,9 @@ auto Emulator::decode() -> void {
     } else if (firstNibble == 0x1) {
         currentOperation = &Emulator::opJumpAddr;
     } else if (firstNibble == 0x6) {
-        currentOperation = &Emulator::opSet;
+        currentOperation = &Emulator::opValueSet;
     } else if (firstNibble == 0x7) {
-        currentOperation = &Emulator::opAdd;
+        currentOperation = &Emulator::opValueAdd;
     } else if (firstNibble == 0xA) {
         currentOperation = &Emulator::opSetIndex;
     } else if (firstNibble == 0xD) {
@@ -94,10 +94,10 @@ auto Emulator::opClearScreen() -> void {
 auto Emulator::opJumpAddr() -> void { // Jump to Address
     cpu.pc = lastTwelveBits;
 }
-auto Emulator::opSet() -> void {
+auto Emulator::opValueSet() -> void {
     cpu.vRegisters.at(secondNibble) = secondByte;
 }
-auto Emulator::opAdd() -> void {
+auto Emulator::opValueAdd() -> void {
     cpu.vRegisters.at(secondNibble) += secondByte;
 }
 auto Emulator::opSetIndex() -> void {
@@ -109,7 +109,7 @@ auto Emulator::opDraw() -> void {
     uint16_t screenX = cpu.vRegisters.at(secondNibble) % screen.WIDTH;
     uint16_t screenY = cpu.vRegisters.at(thirdNibble) % screen.HEIGHT;
     for (size_t line = 0; line < fourthNibble; ++line, ++spriteLineDataLocation, ++screenY) {
-        if (screen.drawSpriteLine(screenX, screenY, cpu.memory.ram.at(spriteLineDataLocation))) {
+        if (screen.drawSpriteLine(screenX, screenY, cpu.ram.at(spriteLineDataLocation))) {
             pixelTurnedOff = true;
         }
     }

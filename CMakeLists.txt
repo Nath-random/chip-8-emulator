@@ -10,7 +10,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON) # damit C++26 erzwungen wird
 
 set(SOURCES # SOURCES ist Name der neuen Variablen
     src/cpu.cpp
-    src/memory.cpp
     src/emulator.cpp
     src/screen.cpp
 )

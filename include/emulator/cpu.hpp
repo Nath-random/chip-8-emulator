@@ -2,13 +2,14 @@
 #ifndef CPU_HPP_
 #define CPU_HPP_
 
-#include "memory.hpp"
+#include <array>
 #include <cstdint>
 
 struct CPU {
 
-// private:
-    Memory memory;
+    CPU();
+
+    std::array<uint8_t, 4096> ram{};
 
     // registers v0 to vF, vF is used as flag register. v stands for variable
     std::array<uint8_t, 16> vRegisters; 

@@ -18,13 +18,41 @@ struct Emulator {
     auto decode() -> void;
     auto execute() -> void;
 
-    auto opClearScreen() -> void;
-    auto opJumpAddr() -> void;
-    auto opSet() -> void;
-    auto opAdd() -> void;
-    auto opSetIndex() -> void;
-    auto opDraw() -> void;
-    auto opNop() -> void;
+    auto opClearScreen() -> void; // 00E0
+    auto opReturnSubroutine() -> void; // 00EE
+    auto opJumpAddr() -> void; // 1NNN
+    auto opCallSubroutine() -> void; // 2NNN
+    auto opSkipEqual() -> void; // 3XNN
+    auto opSkipNotEqual() -> void; // 4XNN
+    auto opSkipRegistersEqual() -> void; // 5XY0
+    auto opValueSet() -> void; // 6XNN
+    auto opValueAdd() -> void; // 7XNN
+    auto opRegisterSet() -> void; // 8XY0
+    auto opOr() -> void; // 8XY1
+    auto opAnd() -> void; // 8XY2
+    auto opXor() -> void; // 8XY3
+    auto opRegisterAdd() -> void; // 8XY4
+    auto opSubtract() -> void; // 8XY5
+    auto opShiftRight() -> void; // 8XY6
+    auto opSubtractReverse() -> void; // 8XY7
+    auto opShiftLeft() -> void; // 8XYE
+    auto opSkipRegistersNotEqual() -> void; // 9XY0
+    auto opSetIndex() -> void; // ANNN
+    auto opJumpOffset() -> void; // BNNN
+    auto opRandom() -> void; // CXNN
+    auto opDraw() -> void; // DXYN
+    auto opSkipKey() -> void; // EX9E
+    auto opSkipNoKey() -> void; // EXA1
+    auto opGetDelayTimer() -> void; // FX07
+    auto opSetDelayTimer() -> void; // FX15
+    auto opSetSoundTimer() -> void; // FX18
+    auto opAddIndex() -> void; // FX1E
+    auto opGetKey() -> void; // FX0A
+    auto opFontCharacter() -> void; // FX29
+    auto opDecimalConversion() -> void; // FX33
+    auto opStoreRegisters() -> void; // FX55
+    auto opLoadRegisters() -> void; // FX65
+    auto opNop() -> void; // Rest
 
     static constexpr uint fps = 60; // frames per second
     static constexpr uint cpf = 10; // cycles per frame
