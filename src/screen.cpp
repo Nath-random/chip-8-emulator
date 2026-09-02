@@ -4,16 +4,53 @@
 #include "emulator.hpp"
 
 Screen::Screen() {
-    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     SDL_CreateWindowAndRenderer(WIDTH * SCALING_FACTOR, HEIGHT * SCALING_FACTOR, 0, &window, &renderer);
     SDL_RenderSetScale(renderer, SCALING_FACTOR, SCALING_FACTOR);
     clearScreen();
+
+    initAudio();
 }
 
 Screen::~Screen() {
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_Quit();
+}
+
+// userdata ist void-pointer, weil man irgendwas übergeben kann und in diesem Fall wird halt ein double übergeben
+auto Screen::audioCallback(void* userdata, uint8_t* stream, int len) -> void {
+    double* phase = reinterpret_cast<double*>(userdata);
+    int16_t* buffer = reinterpret_cast<int16_t*>(stream);
+    int length = len / 2; // weil wir 16 bit statt 8 machen, braucht es nur halb so viele Einträge
+
+    constexpr int frequency = 400; // das ist Tonhöhe vom beep
+    constexpr int sampleRate = 44100; // die Soundkarte aktualisiert das Sample 441000 mal pro Sekunde.
+    //Ein Sample ist die Amplitude des Sounds in einem Moment. 
+
+    constexpr int volume = 3000;
+
+    for (int i = 0; i < length; ++i) {
+        buffer[i] = (*phase < 0.0) ? volume : -volume; // Macht Rechtecksignal
+        *phase += static_cast<double>(frequency) / sampleRate;
+        if (*phase > 0.5) {
+            *phase -= 1.0;
+        }
+    }
+}
+
+auto Screen::initAudio() -> void {
+    SDL_AudioSpec want, have;
+    SDL_zero(want);
+
+    want.freq = 44100;
+    want.format = AUDIO_S16SYS;
+    want.channels = 1;
+    want.samples = 2048;
+    want.callback = audioCallback;
+    want.userdata = &audioPhase;
+
+    audioDevice = SDL_OpenAudioDevice(nullptr, 0, &want, &have, 0);
 }
 
 auto Screen::clearScreen() -> void {
@@ -50,9 +87,9 @@ auto Screen::renderFrame() -> void {
     for (size_t x = 0; x < WIDTH; ++x) {
         for (size_t y = 0; y < HEIGHT; ++y) {
             if (pixelState.at(y).at(x)) {
-                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                SDL_SetRenderDrawColor(renderer, 150, 150, 200, 255);
             } else {
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
             }
             SDL_RenderDrawPoint(renderer, x, y);
         }

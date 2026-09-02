@@ -60,7 +60,10 @@ auto Emulator::updateTimers() -> void {
         --delayTimer;
     }
     if (soundTimer) {
+        SDL_PauseAudioDevice(screen.audioDevice, 0);
         --soundTimer;
+    } else {
+        SDL_PauseAudioDevice(screen.audioDevice, 1);
     }
 }
 
@@ -258,7 +261,6 @@ auto Emulator::opRandom() -> void {
     uint8_t randomNumber = static_cast<uint8_t>(distribution(generator));
     
     cpu.vRegisters.at(0) = randomNumber & secondByte;
-    std::cout << "not implemented: " << opCode << "\n";
 }
 auto Emulator::opDraw() -> void {
     bool pixelTurnedOff = false;
@@ -311,7 +313,7 @@ auto Emulator::opGetKey() -> void {
     cpu.pc = (cpu.pc + 4096 - 2) % 4096; // do this instruction until a button is pressed
 }
 auto Emulator::opFontCharacter() -> void {
-    cpu.i = 0x50 + 5 * cpu.vRegisters.at(secondNibble); // a character is bytes long, font is stored at 0x50 - 0x9F
+    cpu.i = 0x50 + 5 * cpu.vRegisters.at(secondNibble); // a character is 5 bytes long, font is stored at 0x50 - 0x9F
 }
 auto Emulator::opDecimalConversion() -> void {
     uint8_t binaryNumber = cpu.vRegisters.at(secondNibble);
