@@ -1,6 +1,7 @@
 #ifndef EMULATOR_HPP_
 #define EMULATOR_HPP_
 
+#include <random>
 #include <string>
 
 #include "cpu.hpp"
@@ -73,6 +74,10 @@ private:
     Keyboard keyboard{};
     uint8_t delayTimer{};
     uint8_t soundTimer{};
+
+    std::random_device rd{};
+    std::mt19937 generator{rd()}; //mersenne twister
+    std::uniform_int_distribution<> distribution{0, 255};
 
     std::string diskPath;
 

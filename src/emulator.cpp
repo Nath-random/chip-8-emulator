@@ -255,7 +255,9 @@ auto Emulator::opJumpOffset() -> void {
     }
 }
 auto Emulator::opRandom() -> void {
-    cpu.vRegisters.at(0) = 0;
+    uint8_t randomNumber = static_cast<uint8_t>(distribution(generator));
+    
+    cpu.vRegisters.at(0) = randomNumber & secondByte;
     std::cout << "not implemented: " << opCode << "\n";
 }
 auto Emulator::opDraw() -> void {
